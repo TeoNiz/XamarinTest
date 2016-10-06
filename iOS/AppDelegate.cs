@@ -17,6 +17,17 @@ namespace testApp.iOS
 			LoadApplication(new App());
 
 			return base.FinishedLaunching(app, options);
+
+
+		}
+
+		public override UIWindow Window
+		{
+			get
+			{
+				return UIApplication.SharedApplication.KeyWindow;
+			}
 		}
 	}
+
 }
