@@ -8,7 +8,12 @@ namespace testApp
 		{
 			InitializeComponent();
 
-			MainPage = new MainPage();
+			//MainPage = new MainPage();
+			MainPage = new NavigationPage(new testApp.MainPage())
+			{
+				BarTextColor = Color.White,
+				BarBackgroundColor = Color.FromHex("63ad72")
+			};
 		}
 
 		protected override void OnStart()

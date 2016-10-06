@@ -9,31 +9,51 @@ namespace testApp
 		public MainPage()
 		{
 			InitializeComponent();
-			taskText.Text = Helpers.Settings.GeneralSettings;
+			CheckDatabasePopulated();
+			//taskText.Text = Helpers.Settings.GeneralSettings;
 		}
 
-		async void AddTaskButtonClicked(object sender, EventArgs e)
+		protected override void OnAppearing()
 		{
-			var text = taskText.Text;
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				Helpers.Settings.GeneralSettings = text;
-				ShowAlert("Success!", "Now go and do it!");
-			}
-			else
-			{
-				ShowAlert("Fail!", "Please type something!");
-			}
+			base.OnAppearing();
+			listView.ItemsSource = GetToDoList();
 		}
 
-		void ShowAlert(String title, String message)
+		public async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
 		{
-			DisplayAlert(title, message, "OK");
-		}
-	}
+			if (e.SelectedItem == null)
+				return;
 
-	public class AdMobView : ContentView
-	{
-		public AdMobView() {}
+			((ListView)sender).SelectedItem = null;
+
+			var todoEditPage = new ToDoEditPage((ToDoListItem)e.SelectedItem);
+			await Navigation.PushAsync(todoEditPage);
+		}
+
+		List<ToDoListItem> GetToDoList()
+		{
+			var items = new Database().GetTodoItems();
+			return items;
+		}
+
+		void CheckDatabasePopulated()
+		{
+			if (new Database().GetTodoItems().Count < 1)
+			{
+				var items = new List<ToDoListItem>();
+				for (int i = 0; i < 10; i++)
+				{
+					items.Add(
+						new ToDoListItem()
+						{
+							title = "Task " + (i + 1).ToString(),
+							content = "Description - Tap to edit",
+							alpha = (1 - ((double)(i+1) / 20)).ToString()
+						}
+					);
+				}
+				new Database().AddTodoItems(items);
+			}
+		}
 	}
 }
